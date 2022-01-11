@@ -4,8 +4,18 @@ const Modal = {
     }
 }
 
+const Storage = {
+    get() {
+        return JSON.parse(localStorage.getItem('dev.finances:transactions')) || []
+    },
+
+    set(transactions) {
+        localStorage.setItem("dev.finances:transactions", JSON.stringify(transactions))
+    }
+}
+
 const Transaction = {
-    all: [],
+    all: Storage.get(),
 
     add(transaction) {
         Transaction.all.push(transaction);
@@ -23,7 +33,7 @@ const Transaction = {
         let income = 0;
 
         Transaction.all.forEach(transaction => {
-            if(transaction.amount > 0) {
+            if (transaction.amount > 0) {
                 income += transaction.amount
             }
         })
@@ -35,7 +45,7 @@ const Transaction = {
         let expense = 0;
 
         Transaction.all.forEach(transaction => {
-            if(transaction.amount < 0) {
+            if (transaction.amount < 0) {
                 expense += transaction.amount
             }
         })
@@ -78,11 +88,11 @@ const DOM = {
     },
     updateBalance() {
         document.getElementById('incomeDisplay')
-        .innerHTML = Utils.formatCurrency(Transaction.incomes())
+            .innerHTML = Utils.formatCurrency(Transaction.incomes())
         document.getElementById('expenseDisplay')
-        .innerHTML = Utils.formatCurrency(Transaction.expenses())
+            .innerHTML = Utils.formatCurrency(Transaction.expenses())
         document.getElementById('totalDisplay')
-        .innerHTML = Utils.formatCurrency(Transaction.total())
+            .innerHTML = Utils.formatCurrency(Transaction.total())
     },
     clearTransactions() {
         DOM.transactionsContainer.innerHTML = "";
@@ -91,8 +101,8 @@ const DOM = {
 
 const Utils = {
     formatAmount(value) {
-        value = Number(value) * 100 
-        
+        value = Number(value) * 100
+
         return value
     },
 
@@ -134,7 +144,7 @@ const Form = {
     validateFields() {
         const { description, amount, date } = Form.getValues()
 
-        if(description.trim() === "" || amount.trim() === "" || date.trim() === "") {
+        if (description.trim() === "" || amount.trim() === "" || date.trim() === "") {
             throw new Error("Por favor, preencha todos os campos")
         }
     },
@@ -148,7 +158,7 @@ const Form = {
         return {
             description,
             amount,
-            date     
+            date
         }
     },
 
@@ -170,18 +180,18 @@ const Form = {
 
         } catch (error) {
             alert(error.message)
-        } 
+        }
 
-        
+
     }
 }
 
 const App = {
     init() {
         Transaction.all.forEach(DOM.addTransaction)
-        
+
         DOM.updateBalance()
-        
+        Storage.set(Transaction.all)
     },
     reload() {
         DOM.clearTransactions()
